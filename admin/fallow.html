@@ -1,0 +1,150 @@
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+    <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/script.js"></script>
+    <script src="animation.js"></script>
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB_4yJ4HIKYE1pkuxbTjMeqads322YIMaQ&callback=initMap">
+    </script>
+</head>
+
+<body> 
+
+    <div style="float:left;">
+        <div  id="log">
+          <div class="form">
+            <form ng-app = "add_fallow_form" ng-controller = "AddFallowController" class="login-form" id="reg_form">
+              <input type="text" ng-model="space.users_codes" placeholder="Enter users_codes here"  class="form-control" id="users_codes" onfocus="if(this.value!=null){this.value='';}">
+              <input type="text" ng-model="space.users_fallowes" placeholder="Enter users_fallowes here"  class="form-control" id="users_fallowes" onfocus="if(this.value!=null){this.value='';}">
+              <input type="text" ng-model="space.speed" placeholder="Enter speed here"  class="form-control" id="speed" onfocus="if(this.value!=null){this.value='';}">
+              <input type="text" ng-model="space.loc" placeholder="Enter location here"  class="form-control" id="location" onfocus="if(this.value!=null){this.value='';}">
+              <button ng-click="addSpace()">Create</button>
+            </form>
+          </div>
+         </div>
+    </div>
+          
+
+    <div class="form" style="height:336px;float:left;overflow:scroll;" >
+        <div style="float:left;">
+        <button style="width:70px;height:40px;text:center;" onclick="showfallow()">SHOW</button>
+    </div>
+        
+    <div style="margin-left:20px;float:left;">
+        <table id="users" class="table table-bordered table-striped">
+				<tr>
+					<th>ID.</th>
+					<th>users_codes</th>
+					<th>users_fallowes</th>
+					<th>speed</th>
+					<th>location</th>
+				</tr>
+		</table>
+		</div>
+    </div>
+
+          
+    <div>
+        <div id="map" style="width:100%;height:500px;"></div>
+    </div>
+</body>
+   
+   
+  
+        
+    <script>
+    /*global $*/
+    /*global angular*/
+        
+        
+        var slowlyApp = angular.module("add_fallow_form", []);
+        slowlyApp.controller('AddFallowController', function($scope,$http)
+         {     
+             
+                $scope.space = 
+                {
+                    users_codes:"",
+                    users_fallowes:"",
+                    speed:"",
+                    loc:""
+                },
+                
+                
+                $scope.addSpace = function ()
+                {  
+                    var spaceObject;
+                    spaceObject=$scope.space;
+                    $http.post('/fallow',{"users_codes":spaceObject.users_codes,"users_fallowes":spaceObject.users_fallowes,"speed":spaceObject.speed,"location":spaceObject.loc}).success(function(data){
+					alert('Fallow insert succes');
+					document.getElementById("users_codes").valure="";
+					
+                    })
+                    .error(function(data){
+                        alert('eroare');
+                    });
+                }
+        });
+  
+      </script>
+      
+    <script>
+    /*global google*/
+    /*global $*/
+    var map;
+	var geocoder;
+    function initMap() {
+        map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 8,
+            center: {lat: -34.397, lng: 150.644}
+        });
+    geocoder = new google.maps.Geocoder();
+            document.getElementById('submit').addEventListener('click', function() {
+            geocodeAddress(geocoder, map);
+        });
+    }
+	  
+
+    function geocodeAddress(address) {
+        geocoder.geocode({'address': address}, function(results, status) {
+            if (status === 'OK') {
+                map.setCenter(results[0].geometry.location);
+                var marker = new google.maps.Marker({
+                  map: map,
+                  position: results[0].geometry.location
+                });
+            } else {
+            alert('Geocode was not successful for the following reason: ' + status);
+            }
+        });
+    }
+      
+      
+      
+      
+    function showfallow() {
+        $.get("/fallows/", {}, function (data, status) {
+            data.forEach(function(value) {
+                var row = '<tr id="id'+ value.id +'">'+ displayColumns(value)+ '</tr>';
+                $('#users').append(row);
+            geocodeAddress(value.location);
+            });
+        });
+    }
+        
+        var geocoder = new google.maps.Geocoder();
+
+        function displayColumns(value) {
+            return 	'<td>'+value.id+'</td>'
+                    + '<td class="title">'+value.users_codes+'</td>'
+        			+ '<td class="abstract">'+value.users_fallowes+'</td>'
+        			+ '<td class="authors">'+value.speed+'</td>'
+        			+ '<td class="authors">'+value.location+'</td>';
+        }
+      </script>
+</html>

@@ -1,0 +1,93 @@
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+    <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/script.js"></script>
+     <script src = "https://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js"></script>
+    <script src="//code.angularjs.org/1.4.0/angular.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.0/angular-messages.js"></script>
+    <script src="animation.js"></script>
+</head>
+
+
+<body> 
+        <div class="login-page" id="log" position="center">
+          <div class="form">
+              <form ng-app = "register_form" ng-controller = "RegisterController" class="login-form" id="reg_form">
+              <input type="text" ng-model="space.email" placeholder="Enter email here"  class="form-control" id="email">
+              <input type="text" ng-model="space.password" placeholder="Enter password here"  class="form-control" id="password">
+              <input type="text" ng-model="space.users_codes" placeholder="Enter user code here"  class="form-control" id="users_codes" >
+              
+              <button ng-click="register()">Register</button>
+              
+              <p class="message" style="border">Already registered?</p>
+          
+              <input name="lemail" type="INTEGER" ng-model="space.log_cod" placeholder="Enter email here"  class="form-control" id="lemail">
+              
+              <button ng-click="login()">Login</button>
+              
+            </form>
+          </div>
+        </div>
+
+</body>
+   
+   
+       
+        
+<script>
+    /*global $*/
+    /*global angular*/
+   
+        
+        
+        var slowlyApp = angular.module("register_form", []);
+        slowlyApp.controller('RegisterController', function($scope,$http)
+         {     
+             
+                $scope.space = 
+                {
+                    email:"",
+                    password:"",
+                    users_codes:"",
+                    log_cod:""
+                },
+                
+                
+                $scope.register = function ()
+                {  
+                    var spaceObject;
+                    spaceObject=$scope.space;
+                    $http.post('/users',{"email":spaceObject.email,"password":spaceObject.password,"users_codes":spaceObject.users_codes}).success(function(data){
+					document.getElementById("log").style.display="none";
+					window.location = 'fallow.html';
+                    })
+                    .error(function(data){
+                    });
+                }
+                
+                
+                 $scope.login = function ()
+                {  
+                    var spaceObject2;
+                    spaceObject2=$scope.space;
+                    $http.get('/users/'+spaceObject2.log_cod).success(function(data){
+					window.location = 'fallow.html';
+                    })
+                    .error(function(data){
+                    alert('User code error');
+                    });
+                }
+                
+        });
+
+      </script>
+      
+
+
+</html>
